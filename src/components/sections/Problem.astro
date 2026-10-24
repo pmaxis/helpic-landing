@@ -1,5 +1,6 @@
 ---
 /** The chat messages every freelancer knows, each beside where Helpic already has the answer. */
+import Section from '@/components/ui/Section.astro'
 import SectionHeading from '@/components/ui/SectionHeading.astro'
 import Icon from '@/components/ui/Icon.astro'
 import { MESSAGES, type Locale } from '@/i18n/ui'
@@ -13,9 +14,9 @@ const t = MESSAGES[locale].problem
 const ICONS = ['paperclip', 'clock', 'file'] as const
 ---
 
-<section class="border-t border-neutral-200/70 bg-neutral-50/60 py-24 sm:py-32" aria-labelledby="problem-title">
+<Section labelledby="problem-title" tone="amber" variant="panel">
   <div class="mx-auto max-w-6xl px-4 sm:px-6">
-    <SectionHeading id="problem-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
+    <SectionHeading id="problem-title" tone="amber" icon="message" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
 
     <ul class="mx-auto mt-14 grid max-w-4xl gap-4">
       {
@@ -45,4 +46,4 @@ const ICONS = ['paperclip', 'clock', 'file'] as const
       }
     </ul>
   </div>
-</section>
+</Section>

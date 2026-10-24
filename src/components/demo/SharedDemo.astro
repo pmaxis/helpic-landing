@@ -1,0 +1,478 @@
+---
+/**
+ * The hero's point, shown: the freelancer's screen and their client's side
+ * by side, the same work on both. A short story plays on them — the client
+ * sets a task and it lands on the freelancer's board; the freelancer takes
+ * it, finishes it and sends the month's report; the client marks it paid
+ * and the money shows on the freelancer's side — and what one does, the
+ * other sees.
+ *
+ * Each step is a whole state, drawn by render(step): the steps under the
+ * screens jump to any of them. It plays while seen, stops while the pointer
+ * is on it or the tab is in the background, and with "reduce motion" it
+ * waits for a step to be picked. Without a script the screens show the
+ * start of the story.
+ */
+import Icon from '@/components/ui/Icon.astro'
+import { MESSAGES, fill, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const s = MESSAGES[locale].shared
+
+type Status = 'new' | 'progress' | 'done'
+const BADGE: Record<Status, string> = {
+  new: 'bg-sky-50 text-sky-700 ring-sky-600/20',
+  progress: 'bg-amber-50 text-amber-700 ring-amber-600/20',
+  done: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
+}
+const COLUMNS: { key: Status; dot: string }[] = [
+  { key: 'new', dot: 'bg-sky-500' },
+  { key: 'progress', dot: 'bg-amber-500' },
+  { key: 'done', dot: 'bg-emerald-500' },
+]
+/** The project's tasks before the story: two done, one in progress, one new. */
+const TASKS: Status[] = ['done', 'progress', 'done', 'new']
+const total = TASKS.length
+const done = TASKS.filter((t) => t === 'done').length
+const badge = 'inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium whitespace-nowrap ring-1 ring-inset'
+/** The same, for a badge that starts hidden: the script gives it its display when it shows. */
+const hiddenBadge = `hidden ${badge.replace('inline-flex ', '')}`
+const initials = (name: string) => name.split(' ').map((w) => w[0]).join('')
+---
+
+<div
+  data-shared
+  data-statuses={JSON.stringify(s.statuses)}
+  data-progress={s.progress}
+  data-badges={JSON.stringify(BADGE)}
+  data-badge={badge}
+>
+  <div class="relative grid gap-5 lg:grid-cols-2 lg:gap-14" aria-hidden="true">
+    <!-- the freelancer's screen -->
+    <div class="flex min-w-0 flex-col">
+      <p class="mb-2.5 flex items-center gap-2 px-1 text-xs font-medium text-neutral-500">
+        <span class="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-[9px] font-semibold text-white">{initials(s.freelancer)}</span>
+        {s.you}
+        <span class="text-neutral-300">·</span>
+        <span class="text-neutral-400">{s.freelancer}</span>
+      </p>
+      <div data-side="you" class="flex flex-1 flex-col overflow-hidden rounded-2xl bg-white text-left shadow-2xl ring-1 shadow-neutral-900/10 ring-neutral-900/10 transition-shadow duration-500">
+        <div class="flex items-center justify-between gap-3 border-b border-neutral-200 px-4 py-3">
+          <div class="min-w-0">
+            <p class="truncate text-sm font-semibold text-neutral-900">{s.project}</p>
+            <p class="truncate text-xs text-neutral-500">{s.company}</p>
+          </div>
+          <div class="shrink-0 text-right">
+            <p class="text-[10px] text-neutral-500">{s.earned}</p>
+            <p data-earned class="text-sm font-semibold text-neutral-900 tabular-nums">$2,230.00</p>
+          </div>
+        </div>
+
+        <div class="grid flex-1 grid-cols-3 gap-2 p-3">
+          {
+            COLUMNS.map((c, ci) => (
+              <div class="min-w-0 rounded-xl bg-neutral-50 p-1.5 ring-1 ring-neutral-200/70">
+                <p class="flex items-center gap-1.5 px-1 pt-0.5 pb-2 text-[11px] font-medium text-neutral-600">
+                  <span class:list={['h-1.5 w-1.5 shrink-0 rounded-full', c.dot]} />
+                  <span class="truncate">{s.columns[ci]}</span>
+                </p>
+                <ul data-column={c.key} class="flex min-h-36 flex-col gap-1.5">
+                  {TASKS.map((t, i) =>
+                    t === c.key ? (
+                      <li data-card class="rounded-lg bg-white p-2 shadow-xs ring-1 ring-neutral-200">
+                        <p class="line-clamp-2 text-[11px] leading-snug font-medium hyphens-auto text-neutral-800 in-data-[column=done]:text-neutral-500">{s.tasks[i]}</p>
+                      </li>
+                    ) : null,
+                  )}
+                  {c.key === 'new' && (
+                    <li data-card data-faq-card class="hidden rounded-lg bg-white p-2 shadow-xs ring-1 ring-neutral-200">
+                      <p class="line-clamp-2 text-[11px] leading-snug font-medium hyphens-auto text-neutral-800 in-data-[column=done]:text-neutral-500">{s.newTask}</p>
+                      <p data-faq-timer class="mt-1.5 hidden items-center gap-1 text-[10px] font-medium text-emerald-600 tabular-nums">
+                        <span class="animate-pulse-dot h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                        <span data-faq-clock>0:00:00</span>
+                      </p>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
+
+        <!-- the month's report, from this side -->
+        <div class="flex items-center justify-between gap-3 border-t border-neutral-200 bg-neutral-50/70 px-4 py-3">
+          <div class="flex min-w-0 items-center gap-2.5">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-neutral-500 ring-1 ring-neutral-200">
+              <Icon name="file" class="h-4 w-4" />
+            </span>
+            <div class="min-w-0">
+              <p class="truncate text-xs font-semibold text-neutral-900">{s.report}</p>
+              <p class="truncate text-[11px] text-neutral-500 tabular-nums">{s.reportMeta}</p>
+            </div>
+          </div>
+          <span data-you-report="none" class="shrink-0 rounded-lg bg-neutral-900 px-2.5 py-1.5 text-[11px] font-medium text-white">{s.send}</span>
+          <span data-you-report="sent" class:list={[hiddenBadge, BADGE.new]}>{s.sent}</span>
+          <span data-you-report="paid" class:list={[hiddenBadge, BADGE.done, 'gap-1']}>
+            <Icon name="check" class="h-3 w-3" strokeWidth={3} />
+            {s.paid}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- what one does, the other sees: a pulse across -->
+    <div class="pointer-events-none absolute top-1/2 left-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 lg:block">
+      <div class="relative flex h-10 w-10 items-center justify-center rounded-full bg-white text-emerald-600 shadow-lg ring-1 ring-neutral-200">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+          <path d="M7 7h11l-3-3"></path>
+          <path d="M17 17H6l3 3"></path>
+        </svg>
+        <span data-beam class="absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-emerald-500 opacity-0 shadow-[0_0_12px_2px] shadow-emerald-400/70"></span>
+      </div>
+    </div>
+
+    <!-- the client's screen -->
+    <div class="flex min-w-0 flex-col">
+      <p class="mb-2.5 flex items-center gap-2 px-1 text-xs font-medium text-neutral-500">
+        <span class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-semibold text-white">AI</span>
+        {s.client}
+        <span class="text-neutral-300">·</span>
+        <span class="text-neutral-400">{s.company}</span>
+      </p>
+      <div data-side="client" class="flex flex-1 flex-col overflow-hidden rounded-2xl bg-white text-left shadow-2xl ring-1 shadow-neutral-900/10 ring-neutral-900/10 transition-shadow duration-500">
+        <div class="border-b border-neutral-200 px-4 py-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate text-sm font-semibold text-neutral-900">{s.project}</p>
+              <p data-progress-text class="truncate text-xs text-neutral-500">{fill(s.progress, { done, total })}</p>
+            </div>
+            <span data-add class="flex shrink-0 items-center gap-1 rounded-lg bg-neutral-900 px-2.5 py-1.5 text-[11px] font-medium text-white">
+              <Icon name="plus" class="h-3 w-3" strokeWidth={2.5} />
+              {s.addTask}
+            </span>
+          </div>
+          <div class="mt-2.5 h-1.5 overflow-hidden rounded-full bg-neutral-100">
+            <div data-progress-bar class="h-full rounded-full bg-emerald-500 transition-[width] duration-700 ease-out" style={`width: ${Math.round((done / total) * 100)}%`}></div>
+          </div>
+        </div>
+
+        <ul class="flex-1 divide-y divide-neutral-100 px-4">
+          {
+            TASKS.map((t, i) => (
+              <li class="flex items-center justify-between gap-3 py-2.5">
+                <span class:list={['truncate text-[13px]', t === 'done' ? 'text-neutral-500' : 'text-neutral-800']}>{s.tasks[i]}</span>
+                <span class:list={[badge, BADGE[t]]}>{s.statuses[t]}</span>
+              </li>
+            ))
+          }
+          <li data-faq-row class="hidden items-center justify-between gap-3 py-2.5">
+            <span class="min-w-0">
+              <span class="block truncate text-[13px] font-medium text-neutral-900">{s.newTask}</span>
+              <span data-working class="hidden items-center gap-1 text-[11px] text-amber-600">
+                <span class="animate-pulse-dot h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                {s.working}
+              </span>
+            </span>
+            <span data-faq-badge class:list={[badge, BADGE.new]}>{s.statuses.new}</span>
+          </li>
+        </ul>
+
+        <!-- the month's report, from this side: there once it's sent -->
+        <div data-client-report class="invisible flex items-center justify-between gap-3 border-t border-neutral-200 bg-neutral-50/70 px-4 py-3 opacity-0 transition-opacity duration-500">
+          <div class="flex min-w-0 items-center gap-2.5">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-neutral-500 ring-1 ring-neutral-200">
+              <Icon name="file" class="h-4 w-4" />
+            </span>
+            <div class="min-w-0">
+              <p class="truncate text-xs font-semibold text-neutral-900">{s.report}</p>
+              <p class="truncate text-[11px] text-neutral-500 tabular-nums">{s.reportMeta}</p>
+            </div>
+          </div>
+          <span data-client-report-state="sent" class="shrink-0 rounded-lg bg-emerald-600 px-2.5 py-1.5 text-[11px] font-medium text-white">{s.markPaid}</span>
+          <span data-client-report-state="paid" class:list={[hiddenBadge, BADGE.done, 'gap-1']}>
+            <Icon name="check" class="h-3 w-3" strokeWidth={3} />
+            {s.paid}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- the story, told: also buttons to see any step; on a phone, the step playing alone -->
+  <ol class="mx-auto mt-8 grid max-w-5xl gap-2 sm:grid-cols-5">
+    {
+      s.steps.map((step, i) => (
+        <li class="hidden has-[[aria-pressed=true]]:block sm:block">
+          <button
+            type="button"
+            data-step={i + 1}
+            aria-pressed="false"
+            class="group relative h-full w-full overflow-hidden rounded-xl p-3 text-left ring-1 ring-neutral-200 transition-colors hover:bg-white aria-pressed:bg-white aria-pressed:shadow-sm"
+          >
+            <span class="flex items-center gap-1.5 text-[11px] font-semibold">
+              <span
+                class:list={[
+                  'rounded-full px-1.5 py-px',
+                  step.who === 'client' ? 'bg-emerald-50 text-emerald-700' : 'bg-neutral-100 text-neutral-700',
+                ]}
+              >
+                {step.who === 'client' ? s.whoClient : s.whoYou}
+              </span>
+              <span class="text-neutral-400 tabular-nums">{i + 1}/5</span>
+            </span>
+            <span class="mt-1.5 block text-xs leading-snug text-neutral-500 group-aria-pressed:text-neutral-900">{step.text}</span>
+            <!-- how long until the next step -->
+            <span data-step-bar class="absolute bottom-0 left-0 h-0.5 w-0 bg-emerald-500"></span>
+          </button>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<script>
+  type Status = 'new' | 'progress' | 'done'
+  type Report = 'none' | 'sent' | 'paid'
+
+  /** Each step of the story as a whole state: where the new task is, where the report is. */
+  const FAQ: (Status | null)[] = [null, 'new', 'progress', 'done', 'done', 'done']
+  const REPORT: Report[] = ['none', 'none', 'none', 'none', 'sent', 'paid']
+  const STEPS = 5
+  const STEP_MS = 3200
+  const EARNED_BEFORE = 223000
+  const REPORT_CENTS = 75000
+
+  const money = (cents: number) => '$' + (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-shared]')) {
+    const $ = <T extends HTMLElement = HTMLElement>(sel: string) => root.querySelector<T>(sel)!
+    const statuses = JSON.parse(root.dataset.statuses!) as Record<Status, string>
+    const badges = JSON.parse(root.dataset.badges!) as Record<Status, string>
+    const badgeBase = root.dataset.badge!
+    const progressTemplate = root.dataset.progress!
+
+    const you = $('[data-side=you]')
+    const client = $('[data-side=client]')
+    const columns = Object.fromEntries([...root.querySelectorAll<HTMLElement>('[data-column]')].map((c) => [c.dataset.column, c])) as Record<Status, HTMLElement>
+    const cards = [...root.querySelectorAll<HTMLElement>('[data-card]')]
+    const faqCard = $('[data-faq-card]')
+    const faqTimer = $('[data-faq-timer]')
+    const faqClock = $('[data-faq-clock]')
+    const earned = $('[data-earned]')
+    const youReport = [...root.querySelectorAll<HTMLElement>('[data-you-report]')]
+    const add = $('[data-add]')
+    const faqRow = $('[data-faq-row]')
+    const faqBadge = $('[data-faq-badge]')
+    const working = $('[data-working]')
+    const progressText = $('[data-progress-text]')
+    const progressBar = $('[data-progress-bar]')
+    const clientReport = $('[data-client-report]')
+    const clientReportStates = [...root.querySelectorAll<HTMLElement>('[data-client-report-state]')]
+    const beam = $('[data-beam]')
+    const stepButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-step]')]
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let step = 0
+    let hovering = false
+    let onScreen = false
+    const playing = () => onScreen && !hovering && !document.hidden && !reduceMotion.matches
+
+    const show = (el: HTMLElement, on: boolean, display = 'flex') => {
+      el.classList.toggle('hidden', !on)
+      el.classList.toggle(display, on)
+    }
+
+    /** A brief green ring: where something just happened. */
+    function flash(el: HTMLElement) {
+      if (reduceMotion.matches) return
+      el.animate(
+        [{ boxShadow: '0 0 0 2px rgb(16 185 129 / 0.7), 0 8px 24px -8px rgb(16 185 129 / 0.5)' }, { boxShadow: '0 0 0 0 transparent' }],
+        { duration: 1400, easing: 'ease-out' },
+      )
+    }
+
+    /** A press: what was clicked to make it happen. */
+    function press(el: HTMLElement) {
+      if (reduceMotion.matches) return
+      el.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.9)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'ease-out' })
+    }
+
+    /** The pulse across, toward the side that sees the change. */
+    function send(to: 'you' | 'client') {
+      if (reduceMotion.matches || !beam.offsetParent) return
+      const from = to === 'you' ? 'calc(100% + 1.25rem)' : '-1.25rem'
+      const end = to === 'you' ? '-1.25rem' : 'calc(100% + 1.25rem)'
+      beam.animate(
+        [
+          { left: from, opacity: 0 },
+          { opacity: 1, offset: 0.2 },
+          { opacity: 1, offset: 0.8 },
+          { left: end, opacity: 0 },
+        ],
+        { duration: 700, easing: 'ease-in-out' },
+      )
+      ;(to === 'you' ? you : client).animate(
+        [{ boxShadow: '0 0 0 0 transparent' }, { boxShadow: '0 0 0 3px rgb(16 185 129 / 0.35)' }, { boxShadow: '0 0 0 0 transparent' }],
+        { duration: 1200, delay: 450, easing: 'ease-out' },
+      )
+    }
+
+    /** The FAQ card to its column, sliding from where it was. */
+    function placeCard(status: Status | null) {
+      if (!status) {
+        show(faqCard, false, 'block')
+        columns.new.append(faqCard)
+        return
+      }
+      const wasShown = !faqCard.classList.contains('hidden')
+      const before = new Map(cards.map((c) => [c, c.getBoundingClientRect()]))
+      show(faqCard, true, 'block')
+      columns[status].append(faqCard)
+      if (reduceMotion.matches || !wasShown) return
+      for (const card of cards) {
+        const a = before.get(card)!
+        const b = card.getBoundingClientRect()
+        if (!a.width || (a.left === b.left && a.top === b.top)) continue
+        card.animate([{ transform: `translate(${a.left - b.left}px, ${a.top - b.top}px)` }, { transform: 'none' }], {
+          duration: 560,
+          easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+        })
+      }
+    }
+
+    let faqSeconds = 0
+
+    /** Draws the story at step n: both screens as they are then. */
+    function render(n: number) {
+      const faq = FAQ[n]
+      const report = REPORT[n]
+
+      // the freelancer's side
+      placeCard(faq)
+      show(faqTimer, faq === 'progress')
+      if (faq !== 'progress') faqSeconds = 0
+      for (const el of youReport) show(el, el.dataset.youReport === report, el.dataset.youReport === 'none' ? 'block' : 'inline-flex')
+      earned.textContent = money(EARNED_BEFORE + (report === 'paid' ? REPORT_CENTS : 0))
+
+      // the client's side
+      show(faqRow, faq !== null)
+      if (faq) {
+        faqBadge.className = `${badgeBase} ${badges[faq]}`
+        faqBadge.textContent = statuses[faq]
+      }
+      show(working, faq === 'progress')
+      const total = 4 + (faq ? 1 : 0)
+      const done = 2 + (faq === 'done' ? 1 : 0)
+      progressText.textContent = progressTemplate.replace('{done}', String(done)).replace('{total}', String(total))
+      progressBar.style.width = `${Math.round((done / total) * 100)}%`
+      clientReport.classList.toggle('invisible', report === 'none')
+      clientReport.classList.toggle('opacity-0', report === 'none')
+      for (const el of clientReportStates) show(el, el.dataset.clientReportState === report, el.dataset.clientReportState === 'paid' ? 'inline-flex' : 'block')
+
+      for (const b of stepButtons) b.setAttribute('aria-pressed', String(Number(b.dataset.step) === n))
+    }
+
+    let pending: number | undefined
+
+    /** Moves the story to step n: the press on one side, then the change on both. */
+    function go(n: number, animate: boolean) {
+      window.clearTimeout(pending)
+      const previous = step
+      step = n
+      const forward = animate && n === previous + 1
+      if (!forward) {
+        render(n)
+        return
+      }
+      // who acts, and where it shows
+      const acts: Record<number, [HTMLElement, 'you' | 'client', HTMLElement[]]> = {
+        1: [add, 'you', [faqCard, faqRow]],
+        2: [faqCard, 'client', [faqBadge, faqCard]],
+        3: [faqCard, 'client', [faqBadge, faqCard]],
+        4: [youReport[0], 'client', [clientReport]],
+        5: [clientReportStates[0], 'you', [earned]],
+      }
+      const [actor, to, changed] = acts[n]
+      press(actor)
+      pending = window.setTimeout(() => {
+        render(n)
+        send(to)
+        for (const el of changed) flash(el)
+      }, 320)
+    }
+
+    /** The bar under the step: how long until the next. */
+    function runBar() {
+      for (const b of stepButtons) b.querySelector<HTMLElement>('[data-step-bar]')!.getAnimations().forEach((a) => a.cancel())
+      const button = stepButtons[step - 1]
+      if (!button || !playing()) return
+      button.querySelector<HTMLElement>('[data-step-bar]')!.animate([{ width: '0%' }, { width: '100%' }], { duration: STEP_MS, easing: 'linear' })
+    }
+
+    let timer: number | undefined
+    function schedule() {
+      window.clearTimeout(timer)
+      runBar()
+      if (!playing()) return
+      timer = window.setTimeout(() => {
+        // after the last step, a breath at the start, then again
+        if (step >= STEPS) {
+          go(0, false)
+          timer = window.setTimeout(() => {
+            go(1, true)
+            schedule()
+          }, 900)
+          return
+        }
+        go(step + 1, true)
+        schedule()
+      }, STEP_MS)
+    }
+
+    for (const b of stepButtons) {
+      b.addEventListener('click', () => {
+        const n = Number(b.dataset.step)
+        go(n, n === step + 1)
+        schedule()
+      })
+    }
+
+    root.addEventListener('pointerenter', () => {
+      hovering = true
+      schedule()
+    })
+    root.addEventListener('pointerleave', () => {
+      hovering = false
+      schedule()
+    })
+    document.addEventListener('visibilitychange', schedule)
+    reduceMotion.addEventListener('change', schedule)
+    new IntersectionObserver(([entry]) => {
+      const wasOn = onScreen
+      onScreen = entry.isIntersecting
+      // coming into view, the story starts from its first step
+      if (onScreen && !wasOn && step === 0 && !reduceMotion.matches) {
+        timer = window.setTimeout(() => {
+          go(1, true)
+          schedule()
+        }, 700)
+        return
+      }
+      schedule()
+    }, { threshold: 0.35 }).observe(root)
+
+    // the timer on the task in progress
+    window.setInterval(() => {
+      if (FAQ[step] !== 'progress' || document.hidden) return
+      faqSeconds += 3
+      const m = Math.floor(faqSeconds / 60)
+      faqClock.textContent = `0:${String(m).padStart(2, '0')}:${String(faqSeconds % 60).padStart(2, '0')}`
+    }, 1000)
+
+    render(0)
+  }
+</script>

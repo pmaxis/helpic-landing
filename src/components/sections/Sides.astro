@@ -1,5 +1,6 @@
 ---
 /** What the freelancer gets, and what their client does: the two accounts Helpic has. */
+import Section from '@/components/ui/Section.astro'
 import SectionHeading from '@/components/ui/SectionHeading.astro'
 import Icon from '@/components/ui/Icon.astro'
 import LinkButton from '@/components/ui/LinkButton.astro'
@@ -14,9 +15,9 @@ const { locale } = Astro.props
 const t = MESSAGES[locale].sides
 ---
 
-<section class="py-24 sm:py-32" aria-labelledby="sides-title">
+<Section labelledby="sides-title" tone="violet" divider>
   <div class="mx-auto max-w-6xl px-4 sm:px-6">
-    <SectionHeading id="sides-title" eyebrow={t.eyebrow} title={t.title} />
+    <SectionHeading id="sides-title" tone="violet" icon="users" eyebrow={t.eyebrow} title={t.title} />
 
     <div class="mt-16 grid gap-5 lg:grid-cols-2">
       <!-- the freelancer: dark in either theme -->
@@ -70,4 +71,4 @@ const t = MESSAGES[locale].sides
       </article>
     </div>
   </div>
-</section>
+</Section>

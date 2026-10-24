@@ -1,5 +1,5 @@
 ---
-/** What Helpic is, the page's sections, the way into the app, and the other language. */
+/** What Helpic is, the page's sections, the way to sign up, and the other language. */
 import AppLogo from '@/components/AppLogo.astro'
 import { appLink } from '@/config'
 import { LOCALES, LOCALE_NAMES, MESSAGES, localePath, type Locale } from '@/i18n/ui'
@@ -25,7 +25,6 @@ const COLUMNS = [
   {
     title: t.footer.account,
     links: [
-      { href: appLink('/login'), label: t.nav.signIn },
       { href: appLink('/register'), label: t.footer.register },
     ],
   },

@@ -1,8 +1,9 @@
 ---
 /**
- * The home page in either language: what Helpic is and the app moving, the
- * problem it solves, how it works, what it does, both sides of it, the
- * report up close, questions, and the way in.
+ * The home page in either language: the shared space for a freelancer and
+ * their client, both screens at work; the chats it replaces; how the two of
+ * them use it, and what each gets; the report up close; what makes it work;
+ * questions, and the way in.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import SiteHeader from '@/components/SiteHeader.astro'
@@ -30,9 +31,9 @@ const { locale } = Astro.props
     <Hero locale={locale} />
     <Problem locale={locale} />
     <HowItWorks locale={locale} />
-    <Features locale={locale} />
     <Sides locale={locale} />
     <ReportSpotlight locale={locale} />
+    <Features locale={locale} />
     <Faq locale={locale} />
     <FinalCta locale={locale} />
   </main>

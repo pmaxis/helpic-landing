@@ -1,6 +1,6 @@
 ---
-/** What Helpic is in a sentence, the way in, and the app itself moving underneath. */
-import BoardDemo from '@/components/demo/BoardDemo.astro'
+/** What Helpic is in a sentence, the way in, and both sides of it at work underneath. */
+import SharedDemo from '@/components/demo/SharedDemo.astro'
 import Icon from '@/components/ui/Icon.astro'
 import LinkButton from '@/components/ui/LinkButton.astro'
 import { appLink } from '@/config'
@@ -18,7 +18,7 @@ const t = MESSAGES[locale].hero
   <div class="bg-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
   <div class="pointer-events-none absolute top-[-12rem] left-1/2 h-[32rem] w-[56rem] -translate-x-1/2 rounded-full bg-emerald-400/15 blur-3xl" aria-hidden="true"></div>
 
-  <div class="relative mx-auto max-w-6xl px-4 pt-16 pb-24 sm:px-6 sm:pt-24 sm:pb-32">
+  <div class="relative mx-auto max-w-6xl px-4 pt-14 pb-24 sm:px-6 sm:pt-16 sm:pb-28">
     <div class="mx-auto max-w-4xl text-center">
       <p class="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-medium text-neutral-600 ring-1 ring-neutral-200 backdrop-blur sm:text-sm">
         <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
@@ -50,8 +50,8 @@ const t = MESSAGES[locale].hero
       </ul>
     </div>
 
-    <div class="lean relative mx-auto mt-16 max-w-5xl sm:mt-20">
-      <BoardDemo locale={locale} />
+    <div class="lean relative mx-auto mt-14 max-w-6xl sm:mt-16">
+      <SharedDemo locale={locale} />
     </div>
   </div>
 </section>

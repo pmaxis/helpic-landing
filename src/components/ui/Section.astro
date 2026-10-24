@@ -1,0 +1,48 @@
+---
+/**
+ * A section of the home page, in one of two kinds that take turns down the
+ * page so the eye sees where each ends:
+ *
+ * - a panel: a rounded, tinted block inset from the page's edges, with
+ *   dots and slow-drifting glows in its colour;
+ * - plain: on the page itself, with a soft glow in its colour behind the
+ *   heading and, when it follows another plain one, a divider above it.
+ */
+import { TONES, type Tone } from './tones'
+
+interface Props {
+  id?: string
+  labelledby: string
+  tone: Tone
+  variant?: 'plain' | 'panel'
+  /** A line with a lit dot above the section: for a plain one after a plain one. */
+  divider?: boolean
+}
+
+const { id, labelledby, tone, variant = 'plain', divider = false } = Astro.props
+const c = TONES[tone]
+---
+
+{
+  variant === 'panel' ? (
+    <section id={id} class="px-3 py-3 sm:px-4" aria-labelledby={labelledby}>
+      <div class:list={['relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-b py-20 ring-1 sm:rounded-[2.5rem] sm:py-28', c.panel]}>
+        <div class="bg-dots pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
+        <div class:list={['animate-drift pointer-events-none absolute -top-40 left-[10%] -z-10 h-80 w-[36rem] rounded-full blur-3xl', c.glow]} aria-hidden="true" />
+        <div class:list={['animate-drift-slow pointer-events-none absolute -right-20 -bottom-48 -z-10 h-80 w-[32rem] rounded-full blur-3xl', c.glow2]} aria-hidden="true" />
+        <slot />
+      </div>
+    </section>
+  ) : (
+    <section id={id} class="relative isolate py-24 sm:py-32" aria-labelledby={labelledby}>
+      {divider && (
+        <div class="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-center px-4" aria-hidden="true">
+          <span class="h-px w-full max-w-4xl bg-gradient-to-r from-transparent via-neutral-300 to-transparent" />
+          <span class:list={['absolute h-1.5 w-1.5 rounded-full shadow-[0_0_14px_3px]', c.dot]} />
+        </div>
+      )}
+      <div class:list={['animate-drift pointer-events-none absolute top-8 left-1/2 -z-10 h-56 w-[40rem] max-w-full -translate-x-1/2 rounded-full opacity-70 blur-3xl', c.glow]} aria-hidden="true" />
+      <slot />
+    </section>
+  )
+}

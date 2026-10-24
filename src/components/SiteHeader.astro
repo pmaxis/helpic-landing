@@ -1,5 +1,5 @@
 ---
-/** The logo, the page's sections, the other language, and the way into the app. */
+/** The logo, the page's sections, the other language, and the way to sign up. */
 import AppLogo from '@/components/AppLogo.astro'
 import LinkButton from '@/components/ui/LinkButton.astro'
 import { appLink } from '@/config'
@@ -45,9 +45,6 @@ const SECTIONS = [
         class="rounded-md px-2 py-1.5 text-xs font-semibold text-neutral-500 transition-colors hover:text-neutral-950"
       >
         {LOCALE_SHORT[other]}
-      </a>
-      <a href={appLink('/login')} class="hidden rounded-md px-3 py-1.5 font-medium text-neutral-700 transition-colors hover:text-neutral-950 sm:inline-block">
-        {t.signIn}
       </a>
       <LinkButton href={appLink('/register')}>{t.getStarted}</LinkButton>
     </div>

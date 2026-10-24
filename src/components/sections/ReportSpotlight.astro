@@ -4,6 +4,7 @@
  * stamp landing on it. The steps also work as buttons; with "reduce motion"
  * the report waits on the step picked.
  */
+import Section from '@/components/ui/Section.astro'
 import SectionHeading from '@/components/ui/SectionHeading.astro'
 import { MESSAGES, type Locale } from '@/i18n/ui'
 
@@ -13,7 +14,7 @@ interface Props {
 
 const { locale } = Astro.props
 const t = MESSAGES[locale].spotlight
-const tasks = MESSAGES[locale].demo.tasks
+const tasks = t.doc.tasks
 
 /** The report's rows: the first task is billed by the hour, the rest at a fixed price; they come to $1,250.00. */
 const ROWS = [
@@ -25,7 +26,7 @@ const ROWS = [
 ]
 ---
 
-<section class="border-t border-neutral-200/70 bg-neutral-50/60 py-24 sm:py-32" aria-labelledby="spotlight-title">
+<Section labelledby="spotlight-title" tone="emerald" variant="panel">
   <div class="mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-2 lg:gap-20">
     <div data-report class="reveal relative order-last lg:order-first" data-step="2">
       <div class="pointer-events-none absolute inset-x-8 -bottom-6 h-24 rounded-full bg-emerald-400/20 blur-3xl" aria-hidden="true"></div>
@@ -38,7 +39,7 @@ const ROWS = [
         <span data-show="1" class="absolute top-5 right-5 hidden rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-medium text-sky-700 ring-1 ring-sky-600/20 ring-inset">
           {t.steps[1]}
         </span>
-        <p class="mt-2 text-center text-xl font-bold text-neutral-950">{MESSAGES[locale].how.report.title}</p>
+        <p class="mt-2 text-center text-xl font-bold text-neutral-950">{t.doc.title}</p>
         <p class="mt-1.5 text-center text-xs text-neutral-500">
           {t.doc.period} <span class="text-neutral-300">·</span> {t.doc.project} <span class="text-neutral-300">·</span> {t.doc.count}
         </p>
@@ -79,7 +80,7 @@ const ROWS = [
     </div>
 
     <div>
-      <SectionHeading id="spotlight-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} align="start" />
+      <SectionHeading id="spotlight-title" tone="emerald" icon="file" eyebrow={t.eyebrow} title={t.title} lead={t.lead} align="start" />
       <!-- the report's way: also buttons to see each step -->
       <ol class="reveal mt-10 grid gap-3 sm:grid-cols-3">
         {
@@ -97,7 +98,7 @@ const ROWS = [
                   </span>
                   {s}
                 </span>
-                <span class="mt-1 block text-xs text-neutral-500">{t.stepsText[i]}</span>
+                <span class="mt-1 block truncate text-xs text-neutral-500" title={t.stepsText[i]}>{t.stepsText[i]}</span>
               </button>
             </li>
           ))
@@ -105,7 +106,7 @@ const ROWS = [
       </ol>
     </div>
   </div>
-</section>
+</Section>
 
 <script>
   for (const report of document.querySelectorAll<HTMLElement>('[data-report]')) {

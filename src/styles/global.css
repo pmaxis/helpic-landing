@@ -206,6 +206,28 @@ html {
   }
 }
 
+/* A panel's dots, fading toward its edges. */
+.bg-dots {
+  background-image: radial-gradient(color-mix(in oklab, var(--color-neutral-900) 9%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 20%, transparent 75%);
+}
+
+/* The glows behind sections drift slowly, so the page is never quite still. */
+@keyframes drift {
+  to {
+    transform: translate(6%, 12%) scale(1.12);
+  }
+}
+
+.animate-drift {
+  animation: drift 14s ease-in-out infinite alternate;
+}
+
+.animate-drift-slow {
+  animation: drift 20s ease-in-out -7s infinite alternate-reverse;
+}
+
 /* The paid stamp lands on the report. */
 @keyframes stamp {
   0% {
@@ -251,7 +273,9 @@ html {
 @media (prefers-reduced-motion: reduce) {
   .animate-stamp,
   .animate-toast,
-  .animate-pulse-dot {
+  .animate-pulse-dot,
+  .animate-drift,
+  .animate-drift-slow {
     animation: none;
   }
 }
