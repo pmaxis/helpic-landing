@@ -1,0 +1,217 @@
+/** The site's words in English: the shape every language follows. */
+export const en = {
+  meta: {
+    title: 'Helpic — tasks, time and reports for freelancers and their clients',
+    description:
+      'One workspace for a freelancer and their clients: tasks on a board, time on every task, and a report the client checks and marks paid.',
+  },
+  nav: {
+    features: 'Features',
+    how: 'How it works',
+    faq: 'FAQ',
+    signIn: 'Sign in',
+    getStarted: 'Get started',
+    language: 'Language',
+    menu: 'Sections',
+  },
+  hero: {
+    badge: 'For freelancers and the clients they work for',
+    title: 'From task to payment,',
+    titleAccent: 'all in one place',
+    lead: 'Your client puts tasks on the board, you track the time, and at the end of the month you send a report they check and mark paid. No more “send that file again” or “how much do I owe you?”.',
+    primary: 'Start for free',
+    secondary: 'See how it works',
+    points: ['Free to start', 'Ukrainian and English', 'Two-factor sign-in'],
+  },
+  demo: {
+    url: 'app.helpic.app/projects/website',
+    nav: ['Overview', 'Projects', 'Tasks', 'Reports', 'Clients'],
+    project: 'Website redesign',
+    client: 'Acme Inc',
+    progress: '{done} of {total} done',
+    board: 'Board',
+    columns: ['New', 'In progress', 'Done'],
+    tasks: ['Hero block and pricing', 'Contact form with validation', 'Blog page layout', 'Logo in SVG', 'FAQ section'],
+    labels: ['Design', 'Frontend', 'Frontend', 'Design', 'Content'],
+    due: ['Oct 28', 'Oct 30', 'Nov 3', 'Nov 5', 'Nov 7'],
+    timer: 'Timer',
+    tryIt: 'Click a card to move it along',
+    events: [
+      { who: 'AI', from: 'Acme Inc', what: 'New task', text: 'Add a FAQ section', side: 'due Fri' },
+      { who: 'OK', from: 'Olena', what: 'Comment on', text: 'Contact form with validation', side: '2m ago' },
+      { who: 'AI', from: 'Acme Inc', what: 'File on', text: 'brand-guidelines.pdf', side: '1.2 MB' },
+      { who: 'AI', from: 'Acme Inc', what: 'Report paid', text: 'Website — Oct 2026', side: '$1,250.00', paid: true },
+    ],
+  },
+  problem: {
+    eyebrow: 'Sound familiar?',
+    title: 'Client work falls apart in chats',
+    lead: 'Tasks drown in messages, hours live in a spreadsheet, and the invoice is a screenshot. Helpic keeps each of them where it belongs.',
+    pairs: [
+      { chat: 'Send me the brief again, I can’t find it', answer: 'The brief and files are on the task' },
+      { chat: 'How many hours did that one take?', answer: 'The timer counted 6 h 30 min' },
+      { chat: 'Remind me how much I owe you for October?', answer: 'October’s report: $1,250.00, paid' },
+    ],
+  },
+  how: {
+    eyebrow: 'How it works',
+    title: 'Four steps from the first task to the money',
+    lead: 'Set it up in five minutes. Your client gets their own account and sees exactly what you’re working on.',
+    steps: [
+      { title: 'Invite your client', text: 'Send a link. They join in a minute and can bring their team along.' },
+      { title: 'Work on the board', text: 'They set tasks, you move them through your own columns, with priorities, labels and due dates.' },
+      { title: 'Track the time', text: 'Start the timer on a task or add time by hand. An hourly task prices itself.' },
+      { title: 'Send the report', text: 'Pick the period: the report gathers the work. The client checks it and marks it paid.' },
+    ],
+    invite: { to: 'olena@acme.com', role: 'Client', sent: 'Invitation sent' },
+    report: { title: 'Website — Oct 2026', status: 'Paid' },
+  },
+  features: {
+    eyebrow: 'Features',
+    title: 'Everything client work needs, nothing it doesn’t',
+    lead: 'Built for the way a freelancer and a client actually work together, not for a 200-person company.',
+    board: {
+      title: 'Boards with your own columns',
+      text: 'Each project gets its own workflow: “Design”, “Review”, “Paid”, whatever fits. Priorities, labels, due dates with reminders, and an archive for what’s closed.',
+      columns: ['Brief', 'Design', 'Review', 'Done', 'Paid'],
+    },
+    timer: {
+      title: 'A timer that bills',
+      text: 'Fixed price or by the hour. An hourly task’s price follows its time at your rate, with a rate of its own per project.',
+      rate: 'Rate',
+      price: 'Price',
+      perHour: '/h',
+    },
+    report: {
+      title: 'Reports as PDF',
+      text: 'Basic or detailed, with what was done on every task. Once sent, the sums stay as billed.',
+      eyebrow: 'Work report',
+      total: 'Total',
+    },
+    currency: {
+      title: 'Your currency',
+      text: 'Bill in dollars or euros: a client who pays in hryvnias sees the sum at the National Bank of Ukraine’s rate for the day.',
+      rate: 'NBU rate on Oct 31',
+    },
+    team: {
+      title: 'The client’s whole team',
+      text: 'Members see all the company’s work; contractors only the tasks they’re on.',
+      member: 'Member',
+      contractor: 'Contractor',
+      owner: 'Owner',
+      company: 'Acme Inc',
+      people: ['Andrii Ivanenko', 'Olena Koval', 'Taras Petrenko'],
+    },
+    notify: {
+      title: 'Telegram and email',
+      text: 'New tasks, comments, due dates and payments arrive where you’ll see them. You pick which.',
+      message: 'Due tomorrow',
+      task: 'Contact form with validation',
+    },
+    history: {
+      title: 'Comments, files, history',
+      text: 'Every task keeps its conversation, its files and who changed what, and when.',
+      items: ['moved it to Review', 'attached mockup-v2.fig', 'commented'],
+    },
+    security: {
+      title: 'Safe by default',
+      text: 'Two-factor sign-in with recovery codes, and every device you’re signed in on, each signed out on its own.',
+      devices: ['MacBook · Kyiv', 'iPhone · Lviv'],
+      now: 'This device',
+    },
+  },
+  sides: {
+    eyebrow: 'Two sides, one place',
+    title: 'Good for you, and for your client',
+    freelancer: {
+      title: 'For the freelancer',
+      items: [
+        'Every client’s tasks in one place, not in five chats',
+        'Time and prices counted for you',
+        'A report in a minute instead of an evening in a spreadsheet',
+        'What you’ve earned this month, and who hasn’t paid yet',
+      ],
+      cta: 'Create a freelancer account',
+    },
+    client: {
+      title: 'For the client',
+      items: [
+        'Where the work stands, without asking',
+        'Set tasks and leave comments and files right on them',
+        'Bring your colleagues and contractors',
+        'A clear report: what was done and what it cost',
+      ],
+      note: 'Clients join by their freelancer’s invitation.',
+    },
+  },
+  spotlight: {
+    eyebrow: 'Reports',
+    title: 'A report the client pays without questions',
+    lead: 'Pick the client and the period: the report gathers the finished tasks with their time and prices. Send it, and once the client marks it paid, its tasks move to “Paid” by themselves.',
+    steps: ['Draft', 'Sent', 'Paid'],
+    stepsText: ['You check and adjust', 'The sums are fixed', 'The client confirms'],
+    doc: {
+      eyebrow: 'Work report',
+      period: 'Oct 1 – 31, 2026',
+      project: 'Website redesign',
+      count: '5 tasks',
+      task: 'Task',
+      time: 'Time',
+      price: 'Price',
+      total: 'Total',
+      stamp: 'Paid',
+      draft: 'Draft',
+      hours: '6h 30m',
+      fixed: 'fixed',
+    },
+  },
+  faq: {
+    eyebrow: 'FAQ',
+    title: 'Questions, answered',
+    items: [
+      {
+        q: 'How much does it cost?',
+        a: 'Helpic is free right now, for you and your clients.',
+      },
+      {
+        q: 'Does my client need an account?',
+        a: 'Yes: they accept your invitation by link and set a password, which takes a minute. Then they can bring their colleagues and contractors along.',
+      },
+      {
+        q: 'Can I work with several clients?',
+        a: 'As many as you have. Each one sees only their own tasks, projects and reports.',
+      },
+      {
+        q: 'What currency do I bill in?',
+        a: 'Your own: you set it once with your hourly rate. If a client pays in hryvnias, a report shows the sum at the National Bank of Ukraine’s official rate.',
+      },
+      {
+        q: 'How is my data kept safe?',
+        a: 'Sessions live in httpOnly cookies, two-factor sign-in is one click away, and you see every device you’re signed in on and can sign any of them out.',
+      },
+      {
+        q: 'Which languages does it speak?',
+        a: 'Ukrainian and English, in the app, the emails and Telegram. Light and dark themes too.',
+      },
+    ],
+  },
+  cta: {
+    title: 'Your next report is already in Helpic',
+    lead: 'Create an account, invite a client, and close this month with a report instead of a spreadsheet.',
+    primary: 'Start for free',
+    secondary: 'Sign in',
+  },
+  footer: {
+    tagline: 'Tasks, time and reports for freelancers and their clients.',
+    product: 'Product',
+    account: 'Account',
+    register: 'Create an account',
+    rights: 'Helpic',
+  },
+  notFound: {
+    title: 'Page not found',
+    home: 'Home',
+  },
+}
+
+export type Messages = typeof en

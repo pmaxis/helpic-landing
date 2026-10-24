@@ -1,0 +1,66 @@
+---
+/**
+ * Every page's document: its language, title and description, the canonical
+ * link and its twin in the other language (hreflang), and the Open Graph
+ * tags that previews in messengers and social networks read.
+ */
+import '@/styles/global.css'
+import { APP_NAME } from '@/config'
+import { DEFAULT_LOCALE, LOCALES, MESSAGES, localePath, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+  /** The page's path without the language, e.g. "/". */
+  path?: string
+  title?: string
+  description?: string
+  /** Kept out of search, with no canonical link or twins (the 404 page). */
+  noindex?: boolean
+}
+
+const { locale, path = '/', title, description, noindex = false } = Astro.props
+const t = MESSAGES[locale]
+const pageTitle = title ?? t.meta.title
+const pageDescription = description ?? t.meta.description
+
+const site = Astro.site!
+const canonical = new URL(localePath(locale, path), site)
+const alternates = LOCALES.map((l) => ({ locale: l, href: new URL(localePath(l, path), site).href }))
+const xDefault = new URL(localePath(DEFAULT_LOCALE, path), site).href
+---
+
+<!doctype html>
+<html lang={locale} class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14161c" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {
+      noindex ? (
+        <meta name="robots" content="noindex" />
+      ) : (
+        <>
+          <link rel="canonical" href={canonical.href} />
+          {alternates.map((a) => <link rel="alternate" hreflang={a.locale} href={a.href} />)}
+          <link rel="alternate" hreflang="x-default" href={xDefault} />
+        </>
+      )
+    }
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={APP_NAME} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:locale" content={locale === 'uk' ? 'uk_UA' : 'en_GB'} />
+    <meta name="twitter:card" content="summary" />
+  </head>
+  <body class="min-h-full">
+    <slot />
+  </body>
+</html>

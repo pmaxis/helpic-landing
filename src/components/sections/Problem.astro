@@ -1,0 +1,48 @@
+---
+/** The chat messages every freelancer knows, each beside where Helpic already has the answer. */
+import SectionHeading from '@/components/ui/SectionHeading.astro'
+import Icon from '@/components/ui/Icon.astro'
+import { MESSAGES, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const t = MESSAGES[locale].problem
+const ICONS = ['paperclip', 'clock', 'file'] as const
+---
+
+<section class="border-t border-neutral-200/70 bg-neutral-50/60 py-24 sm:py-32" aria-labelledby="problem-title">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <SectionHeading id="problem-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
+
+    <ul class="mx-auto mt-14 grid max-w-4xl gap-4">
+      {
+        t.pairs.map((p, i) => (
+          <li class="reveal grid items-center gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-5">
+            <!-- the chat -->
+            <div class="flex items-end gap-2.5">
+              <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-neutral-500" aria-hidden="true">
+                <Icon name="message" class="h-3.5 w-3.5" />
+              </span>
+              <p class="relative rounded-2xl rounded-bl-md bg-white px-4 py-3 text-[15px] text-neutral-500 shadow-xs ring-1 ring-neutral-200">
+                <span class="line-through decoration-red-400/70 decoration-2">{p.chat}</span>
+              </p>
+            </div>
+            <span class="hidden h-8 w-8 items-center justify-center rounded-full bg-white text-neutral-400 ring-1 ring-neutral-200 sm:flex" aria-hidden="true">
+              <Icon name="arrowRight" class="h-4 w-4" />
+            </span>
+            <!-- where it is in Helpic -->
+            <p class="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-[15px] font-medium text-neutral-900 shadow-sm ring-1 ring-emerald-600/20">
+              <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600" aria-hidden="true">
+                <Icon name={ICONS[i]} class="h-4 w-4" />
+              </span>
+              {p.answer}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

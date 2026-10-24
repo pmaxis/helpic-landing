@@ -1,0 +1,31 @@
+---
+/** A link that looks like a button: solid for the main way on, outlined beside it. */
+import Icon from '@/components/ui/Icon.astro'
+
+interface Props {
+  href: string
+  variant?: 'solid' | 'outline' | 'light' | 'ghost-dark'
+  size?: 'md' | 'lg'
+  arrow?: boolean
+  class?: string
+}
+
+const { href, variant = 'solid', size = 'md', arrow = false, class: className = '' } = Astro.props
+
+const VARIANTS = {
+  solid: 'bg-neutral-900 text-white shadow-sm hover:bg-neutral-800',
+  outline: 'bg-white text-neutral-800 ring-1 ring-neutral-300 ring-inset hover:bg-neutral-50 hover:text-neutral-950',
+  // on the dark closing panel
+  light: 'bg-white text-neutral-950 hover:bg-neutral-100',
+  'ghost-dark': 'text-white ring-1 ring-white/20 ring-inset hover:bg-white/10',
+}
+const SIZES = { md: 'px-4 py-2.5 text-sm', lg: 'px-5 py-3 text-base' }
+---
+
+<a
+  href={href}
+  class:list={['group inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors', VARIANTS[variant], SIZES[size], className]}
+>
+  <slot />
+  {arrow && <Icon name="arrowRight" class="h-4 w-4 transition-transform group-hover:translate-x-0.5" />}
+</a>

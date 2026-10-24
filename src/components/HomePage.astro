@@ -1,0 +1,40 @@
+---
+/**
+ * The home page in either language: what Helpic is and the app moving, the
+ * problem it solves, how it works, what it does, both sides of it, the
+ * report up close, questions, and the way in.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import SiteHeader from '@/components/SiteHeader.astro'
+import SiteFooter from '@/components/SiteFooter.astro'
+import Hero from '@/components/sections/Hero.astro'
+import Problem from '@/components/sections/Problem.astro'
+import HowItWorks from '@/components/sections/HowItWorks.astro'
+import Features from '@/components/sections/Features.astro'
+import Sides from '@/components/sections/Sides.astro'
+import ReportSpotlight from '@/components/sections/ReportSpotlight.astro'
+import Faq from '@/components/sections/Faq.astro'
+import FinalCta from '@/components/sections/FinalCta.astro'
+import type { Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+---
+
+<BaseLayout locale={locale}>
+  <SiteHeader locale={locale} />
+  <main>
+    <Hero locale={locale} />
+    <Problem locale={locale} />
+    <HowItWorks locale={locale} />
+    <Features locale={locale} />
+    <Sides locale={locale} />
+    <ReportSpotlight locale={locale} />
+    <Faq locale={locale} />
+    <FinalCta locale={locale} />
+  </main>
+  <SiteFooter locale={locale} />
+</BaseLayout>

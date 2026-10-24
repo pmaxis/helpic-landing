@@ -1,0 +1,25 @@
+---
+/** One page for a missing address in either language, since nginx can't tell which was meant. */
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import AppLogo from '@/components/AppLogo.astro'
+import LinkButton from '@/components/ui/LinkButton.astro'
+import { MESSAGES, localePath } from '@/i18n/ui'
+
+const { uk, en } = MESSAGES
+---
+
+<BaseLayout locale="uk" title="404 — Helpic" noindex>
+  <main class="relative flex min-h-screen flex-col items-center justify-center gap-6 overflow-hidden px-4 text-center">
+    <div class="bg-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
+    <AppLogo markOnly size={44} />
+    <p class="relative text-7xl font-bold tracking-tight text-neutral-950 tabular-nums">404</p>
+    <div class="relative">
+      <h1 class="text-xl font-semibold text-neutral-950">{uk.notFound.title}</h1>
+      <p class="mt-1 text-neutral-500" lang="en">{en.notFound.title}</p>
+    </div>
+    <div class="relative flex gap-3">
+      <LinkButton href={localePath('uk')}>{uk.notFound.home}</LinkButton>
+      <span lang="en"><LinkButton href={localePath('en')} variant="outline">{en.notFound.home}</LinkButton></span>
+    </div>
+  </main>
+</BaseLayout>

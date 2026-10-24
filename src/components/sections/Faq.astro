@@ -1,0 +1,35 @@
+---
+/** Questions people ask before signing up: native disclosure widgets, no script. */
+import SectionHeading from '@/components/ui/SectionHeading.astro'
+import Icon from '@/components/ui/Icon.astro'
+import { MESSAGES, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const t = MESSAGES[locale].faq
+---
+
+<section id="faq" class="py-24 sm:py-32" aria-labelledby="faq-title">
+  <div class="mx-auto max-w-3xl px-4 sm:px-6">
+    <SectionHeading id="faq-title" eyebrow={t.eyebrow} title={t.title} />
+
+    <div class="reveal mt-14 divide-y divide-neutral-200 border-y border-neutral-200">
+      {
+        t.items.map((item, i) => (
+          <details class="group" open={i === 0}>
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-left font-medium text-neutral-950 transition-colors hover:text-neutral-600">
+              {item.q}
+              <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full ring-1 ring-neutral-200 transition-transform duration-200 group-open:rotate-45">
+                <Icon name="plus" class="h-3.5 w-3.5" />
+              </span>
+            </summary>
+            <p class="-mt-1 pr-12 pb-6 leading-relaxed text-pretty text-neutral-600">{item.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>

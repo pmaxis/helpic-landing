@@ -1,0 +1,91 @@
+---
+/** The four steps from inviting a client to being paid, each with a bit of the app it happens in. */
+import SectionHeading from '@/components/ui/SectionHeading.astro'
+import Icon from '@/components/ui/Icon.astro'
+import { MESSAGES, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const t = MESSAGES[locale].how
+const demo = MESSAGES[locale].demo
+---
+
+<section id="how" class="py-24 sm:py-32" aria-labelledby="how-title">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <SectionHeading id="how-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
+
+    <ol class="relative mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- the thread through the steps -->
+      <span class="pointer-events-none absolute top-[5.75rem] right-[12%] left-[12%] hidden h-px bg-gradient-to-r from-transparent via-neutral-300 to-transparent lg:block" aria-hidden="true"></span>
+      {
+        t.steps.map((s, i) => (
+          <li class="reveal relative flex flex-col rounded-2xl bg-white p-5 ring-1 ring-neutral-200">
+            <!-- a bit of the app -->
+            <div class="flex h-32 items-center justify-center rounded-xl bg-neutral-50 p-3 ring-1 ring-neutral-200/70" aria-hidden="true">
+              {i === 0 && (
+                <div class="w-full space-y-2">
+                  <div class="flex items-center gap-2 rounded-lg bg-white px-2.5 py-2 text-xs ring-1 ring-neutral-200">
+                    <Icon name="mail" class="h-3.5 w-3.5 text-neutral-400" />
+                    <span class="truncate text-neutral-700">{t.invite.to}</span>
+                    <span class="ml-auto rounded-md bg-neutral-100 px-1.5 py-px text-[10px] font-medium text-neutral-600">{t.invite.role}</span>
+                  </div>
+                  <p class="flex items-center justify-center gap-1.5 rounded-lg bg-neutral-900 px-2.5 py-2 text-xs font-medium text-white">
+                    <Icon name="send" class="h-3.5 w-3.5" />
+                    {t.invite.sent}
+                  </p>
+                </div>
+              )}
+              {i === 1 && (
+                <div class="grid w-full grid-cols-3 gap-1.5">
+                  {['bg-sky-500', 'bg-amber-500', 'bg-emerald-500'].map((dot, c) => (
+                    <div class="space-y-1.5 rounded-lg bg-white p-1.5 ring-1 ring-neutral-200">
+                      <span class="flex items-center gap-1 text-[9px] font-medium text-neutral-500">
+                        <span class:list={['h-1.5 w-1.5 rounded-full', dot]} />
+                        <span class="truncate">{demo.columns[c]}</span>
+                      </span>
+                      {Array.from({ length: 3 - c === 0 ? 1 : 3 - c }).map(() => (
+                        <span class="block h-4 rounded bg-neutral-100" />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {i === 2 && (
+                <div class="flex items-center gap-3 rounded-full bg-white py-2 pr-4 pl-2 shadow-sm ring-1 ring-neutral-200">
+                  <span class="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-900 text-white">
+                    <Icon name="play" class="h-3 w-3" />
+                  </span>
+                  <span class="text-lg font-semibold text-neutral-900 tabular-nums">1:24:36</span>
+                  <span class="animate-pulse-dot h-2 w-2 rounded-full bg-emerald-500" />
+                </div>
+              )}
+              {i === 3 && (
+                <div class="flex w-full items-center gap-2.5 rounded-lg bg-white px-3 py-2.5 ring-1 ring-neutral-200">
+                  <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-neutral-100 text-neutral-500">
+                    <Icon name="file" class="h-4 w-4" />
+                  </span>
+                  <span class="min-w-0">
+                    <span class="block text-xs leading-snug font-medium text-neutral-900">{t.report.title}</span>
+                    <span class="block text-[11px] text-neutral-500 tabular-nums">$1,250.00</span>
+                  </span>
+                  <span class="ml-auto shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-600/20 ring-inset">
+                    {t.report.status}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <p class="mt-5 flex items-center gap-2.5">
+              <span class="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-900 text-xs font-semibold text-white tabular-nums">{i + 1}</span>
+              <span class="font-semibold text-neutral-950">{s.title}</span>
+            </p>
+            <p class="mt-2 text-sm leading-relaxed text-neutral-600">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

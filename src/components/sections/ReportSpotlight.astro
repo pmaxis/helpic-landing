@@ -1,0 +1,147 @@
+---
+/**
+ * A report up close, going its way: a draft, sent, then paid, with the
+ * stamp landing on it. The steps also work as buttons; with "reduce motion"
+ * the report waits on the step picked.
+ */
+import SectionHeading from '@/components/ui/SectionHeading.astro'
+import { MESSAGES, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const t = MESSAGES[locale].spotlight
+const tasks = MESSAGES[locale].demo.tasks
+
+/** The report's rows: the first task is billed by the hour, the rest at a fixed price; they come to $1,250.00. */
+const ROWS = [
+  { time: t.doc.hours, price: '$260.00' },
+  { time: '', price: '$180.00' },
+  { time: '', price: '$320.00' },
+  { time: '', price: '$250.00' },
+  { time: '', price: '$240.00' },
+]
+---
+
+<section class="border-t border-neutral-200/70 bg-neutral-50/60 py-24 sm:py-32" aria-labelledby="spotlight-title">
+  <div class="mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-2 lg:gap-20">
+    <div data-report class="reveal relative order-last lg:order-first" data-step="2">
+      <div class="pointer-events-none absolute inset-x-8 -bottom-6 h-24 rounded-full bg-emerald-400/20 blur-3xl" aria-hidden="true"></div>
+      <!-- the document, as the PDF lays it out -->
+      <div class="relative mx-auto max-w-md rounded-lg bg-white p-6 shadow-2xl ring-1 shadow-neutral-900/10 ring-neutral-900/10 sm:p-8" aria-hidden="true">
+        <p class="flex items-center justify-center gap-2 text-[10px] font-bold tracking-[0.14em] text-neutral-400 uppercase">
+          {t.doc.eyebrow}
+          <span data-show="0" class="rounded-sm px-1 ring-1 ring-neutral-400">{t.doc.draft}</span>
+        </p>
+        <span data-show="1" class="absolute top-5 right-5 hidden rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-medium text-sky-700 ring-1 ring-sky-600/20 ring-inset">
+          {t.steps[1]}
+        </span>
+        <p class="mt-2 text-center text-xl font-bold text-neutral-950">{MESSAGES[locale].how.report.title}</p>
+        <p class="mt-1.5 text-center text-xs text-neutral-500">
+          {t.doc.period} <span class="text-neutral-300">·</span> {t.doc.project} <span class="text-neutral-300">·</span> {t.doc.count}
+        </p>
+
+        <table class="mt-6 w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-neutral-900 text-[10px] font-bold tracking-wider text-neutral-950 uppercase">
+              <th class="pb-2 font-bold">{t.doc.task}</th>
+              <th class="pb-2 text-right font-bold">{t.doc.time}</th>
+              <th class="pb-2 text-right font-bold">{t.doc.price}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              ROWS.map((r, i) => (
+                <tr class="border-b border-neutral-100">
+                  <td class="py-2 pr-2 text-neutral-800">{tasks[i]}</td>
+                  <td class="py-2 text-right whitespace-nowrap text-neutral-500 tabular-nums">{r.time || '—'}</td>
+                  <td class="py-2 pl-3 text-right whitespace-nowrap text-neutral-900 tabular-nums">{r.price}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        <p class="mt-4 flex items-baseline justify-between">
+          <span class="text-[10px] font-bold tracking-wider text-neutral-500 uppercase">{t.doc.total}</span>
+          <span class="text-2xl font-bold text-neutral-950 tabular-nums">$1,250.00</span>
+        </p>
+
+        <!-- the stamp -->
+        <span
+          data-show="2"
+          class="animate-stamp absolute top-5 right-5 rounded-lg border-[3px] border-emerald-500 px-2.5 py-0.5 text-base font-black tracking-widest text-emerald-500 uppercase opacity-90 sm:top-7 sm:right-7"
+        >
+          {t.doc.stamp}
+        </span>
+      </div>
+    </div>
+
+    <div>
+      <SectionHeading id="spotlight-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} align="start" />
+      <!-- the report's way: also buttons to see each step -->
+      <ol class="reveal mt-10 grid gap-3 sm:grid-cols-3">
+        {
+          t.steps.map((s, i) => (
+            <li>
+              <button
+                type="button"
+                data-step-button={i}
+                aria-pressed={i === 2 ? 'true' : 'false'}
+                class="group w-full rounded-xl bg-white p-4 text-left ring-1 ring-neutral-200 transition aria-pressed:shadow-md aria-pressed:ring-2 aria-pressed:ring-emerald-500"
+              >
+                <span class="flex items-center gap-2 text-sm font-semibold text-neutral-950">
+                  <span class="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-100 text-[11px] text-neutral-600 tabular-nums group-aria-pressed:bg-emerald-500 group-aria-pressed:text-white">
+                    {i + 1}
+                  </span>
+                  {s}
+                </span>
+                <span class="mt-1 block text-xs text-neutral-500">{t.stepsText[i]}</span>
+              </button>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<script>
+  for (const report of document.querySelectorAll<HTMLElement>('[data-report]')) {
+    const section = report.closest('section')!
+    const buttons = [...section.querySelectorAll<HTMLButtonElement>('[data-step-button]')]
+    const shown = [...report.querySelectorAll<HTMLElement>('[data-show]')]
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let step = 2
+    let onScreen = false
+    let picked = false
+
+    function show(next: number) {
+      step = next
+      for (const b of buttons) b.setAttribute('aria-pressed', String(Number(b.dataset.stepButton) === step))
+      // shown again, the stamp lands again
+      for (const el of shown) el.classList.toggle('hidden', Number(el.dataset.show) !== step)
+    }
+
+    for (const b of buttons) {
+      b.addEventListener('click', () => {
+        picked = true
+        show(Number(b.dataset.stepButton))
+      })
+    }
+
+    new IntersectionObserver(([entry]) => {
+      // seen again, it starts over from the draft
+      if (entry.isIntersecting && !onScreen && !picked && !reduceMotion.matches) show(0)
+      onScreen = entry.isIntersecting
+    }, { threshold: 0.4 }).observe(report)
+
+    window.setInterval(() => {
+      if (!onScreen || picked || document.hidden || reduceMotion.matches) return
+      show((step + 1) % 3)
+    }, 2200)
+
+    show(step)
+  }
+</script>

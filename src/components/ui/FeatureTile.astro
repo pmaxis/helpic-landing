@@ -1,0 +1,27 @@
+---
+/** A tile of the features grid: a bit of the app on top, then what it does. */
+import Icon from '@/components/ui/Icon.astro'
+import type { IconName } from '@/components/ui/icons'
+
+interface Props {
+  icon: IconName
+  title: string
+  text: string
+  class?: string
+}
+
+const { icon, title, text, class: className = '' } = Astro.props
+---
+
+<li class:list={['reveal group flex flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-neutral-200 transition-shadow hover:shadow-lg hover:shadow-neutral-900/5', className]}>
+  <div class="relative flex min-h-48 flex-1 items-center justify-center overflow-hidden border-b border-neutral-200/70 bg-neutral-50 p-5" aria-hidden="true">
+    <slot />
+  </div>
+  <div class="p-6">
+    <p class="flex items-center gap-2 font-semibold text-neutral-950">
+      <Icon name={icon} class="h-4 w-4 text-emerald-600" />
+      {title}
+    </p>
+    <p class="mt-2 text-sm leading-relaxed text-pretty text-neutral-600">{text}</p>
+  </div>
+</li>

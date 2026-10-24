@@ -1,0 +1,321 @@
+---
+/**
+ * The hero's live glimpse of the app: a project's board whose cards move
+ * along by themselves (or when clicked), the sidebar's timer ticking on the
+ * task in progress, and what the client does arriving as notifications.
+ *
+ * It all stops while the pointer is on it, in a background tab or off
+ * screen; with "reduce motion" nothing moves by itself, and cards still move
+ * on click. It is decoration, hidden from screen readers: the hero's words
+ * say the same.
+ */
+import AppLogo from '@/components/AppLogo.astro'
+import Icon from '@/components/ui/Icon.astro'
+import type { IconName } from '@/components/ui/icons'
+import { MESSAGES, fill, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const d = MESSAGES[locale].demo
+
+type Column = 'new' | 'in_progress' | 'done'
+const COLUMNS: { key: Column; dot: string }[] = [
+  { key: 'new', dot: 'bg-sky-500' },
+  { key: 'in_progress', dot: 'bg-amber-500' },
+  { key: 'done', dot: 'bg-emerald-500' },
+]
+
+const LABEL_TONE = [
+  'bg-violet-50 text-violet-700 ring-violet-600/20',
+  'bg-sky-50 text-sky-700 ring-sky-600/20',
+  'bg-sky-50 text-sky-700 ring-sky-600/20',
+  'bg-violet-50 text-violet-700 ring-violet-600/20',
+  'bg-amber-50 text-amber-700 ring-amber-600/20',
+]
+/** Bars lit of three: high, medium, low. */
+const PRIORITY = [3, 2, 1, 2, 1]
+const PEOPLE = ['ОК', 'AI', 'ОК', 'AI', 'ОК'].map((p) => (locale === 'en' ? p.replace('ОК', 'OK') : p))
+
+/** Where each task starts: the script moves them on and, once all are done, back here. */
+const START: Column[] = ['in_progress', 'new', 'new', 'done', 'new']
+const total = START.length
+const done = START.filter((c) => c === 'done').length
+
+const NAV: IconName[] = ['home', 'folder', 'tasks', 'file', 'users']
+---
+
+<div data-demo class="relative" aria-hidden="true">
+  <!-- the window -->
+  <div class="overflow-hidden rounded-2xl bg-white shadow-2xl shadow-neutral-900/10 ring-1 ring-neutral-900/10">
+    <div class="flex items-center gap-2 border-b border-neutral-200 bg-neutral-50 px-4 py-2.5">
+      <span class="flex gap-1.5">
+        <span class="h-2.5 w-2.5 rounded-full bg-neutral-300"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-neutral-300"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-neutral-300"></span>
+      </span>
+      <span class="mx-auto truncate rounded-md bg-white px-3 py-1 text-[11px] text-neutral-500 ring-1 ring-neutral-200">{d.url}</span>
+      <span class="w-10"></span>
+    </div>
+
+    <div class="flex text-left">
+      <!-- sidebar -->
+      <div class="hidden w-44 shrink-0 flex-col border-r border-neutral-200 bg-neutral-50/60 p-3 md:flex">
+        <AppLogo size={24} />
+        <ul class="mt-5 space-y-0.5 text-[13px]">
+          {
+            d.nav.map((label, i) => (
+              <li
+                class:list={[
+                  'flex items-center gap-2 rounded-md px-2 py-1.5',
+                  i === 1 ? 'bg-white font-medium text-neutral-900 shadow-xs ring-1 ring-neutral-200' : 'text-neutral-500',
+                ]}
+              >
+                <Icon name={NAV[i]} class="h-3.5 w-3.5" />
+                {label}
+              </li>
+            ))
+          }
+        </ul>
+        <div class="mt-auto rounded-lg bg-neutral-900 p-2.5 text-white">
+          <p class="flex items-center gap-1.5 text-[10px] font-medium text-neutral-400">
+            <span class="animate-pulse-dot h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+            {d.timer}
+          </p>
+          <p data-clock class="mt-1 text-base font-semibold tabular-nums">0:42:17</p>
+          <p data-timer-task class="truncate text-[11px] text-neutral-400">{d.tasks[START.indexOf('in_progress')]}</p>
+        </div>
+      </div>
+
+      <!-- the project -->
+      <div class="min-w-0 flex-1 p-3 sm:p-5">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex min-w-0 items-center gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-600">
+              <Icon name="folder" class="h-4 w-4" />
+            </span>
+            <div class="min-w-0">
+              <p class="truncate text-sm font-semibold text-neutral-900">{d.project}</p>
+              <p class="truncate text-xs text-neutral-500">
+                {d.client} · <span data-progress-text data-template={d.progress}>{fill(d.progress, { done, total })}</span>
+              </p>
+            </div>
+          </div>
+          <span class="flex shrink-0 -space-x-1.5">
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-violet-100 text-[10px] font-semibold text-violet-700 ring-2 ring-white">{PEOPLE[0]}</span>
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-[10px] font-semibold text-emerald-700 ring-2 ring-white">AI</span>
+          </span>
+        </div>
+        <div class="mt-3 h-1.5 overflow-hidden rounded-full bg-neutral-100">
+          <div data-progress-bar class="h-full rounded-full bg-emerald-500 transition-[width] duration-700 ease-out" style={`width: ${Math.round((done / total) * 100)}%`}></div>
+        </div>
+
+        <div class="mt-4 flex items-center gap-1 border-b border-neutral-200 text-xs">
+          <span class="-mb-px flex items-center gap-1.5 border-b-2 border-neutral-900 px-1 pb-2 font-medium text-neutral-900">
+            <Icon name="board" class="h-3.5 w-3.5" />
+            {d.board}
+          </span>
+        </div>
+
+        <!-- the board -->
+        <div class="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
+          {
+            COLUMNS.map((c, ci) => (
+              <div class="min-w-0 rounded-xl bg-neutral-50 p-1.5 ring-1 ring-neutral-200/70 sm:p-2">
+                <p class="flex items-center gap-1.5 px-1 pt-0.5 pb-2 text-[11px] font-medium text-neutral-600 sm:text-xs">
+                  <span class:list={['h-2 w-2 shrink-0 rounded-full', c.dot]} />
+                  <span class="truncate">{d.columns[ci]}</span>
+                  <span data-count={c.key} class="ml-auto text-neutral-400 tabular-nums">
+                    {START.filter((s) => s === c.key).length}
+                  </span>
+                </p>
+                <ul data-column={c.key} class="flex min-h-56 flex-col gap-1.5 sm:min-h-64 sm:gap-2">
+                  {START.map((s, i) =>
+                    s === c.key ? (
+                      <li
+                        data-card={i}
+                        class="cursor-pointer rounded-lg bg-white p-2 shadow-xs ring-1 ring-neutral-200 transition-shadow select-none hover:shadow-md sm:p-2.5"
+                      >
+                        <p class="flex items-start gap-1 text-[11px] leading-snug font-medium hyphens-auto text-neutral-900 in-data-[column=done]:text-neutral-500 sm:text-[13px]">
+                          <span class="mt-px hidden shrink-0 text-emerald-600 in-data-[column=done]:inline">
+                            <Icon name="check" class="h-3.5 w-3.5" strokeWidth={2.5} />
+                          </span>
+                          <span class="line-clamp-2">{d.tasks[i]}</span>
+                        </p>
+                        <span
+                          class:list={[
+                            'mt-1.5 hidden rounded-md px-1.5 py-px text-[10px] leading-4 font-medium ring-1 ring-inset sm:inline-block',
+                            LABEL_TONE[i],
+                          ]}
+                        >
+                          {d.labels[i]}
+                        </span>
+                        <div class="mt-1.5 flex items-center justify-between gap-1 text-[10px] text-neutral-500 sm:mt-2 sm:text-[11px]">
+                          <span class="flex items-end gap-px" title="">
+                            {[1, 2, 3].map((b) => (
+                              <span
+                                class:list={[
+                                  'w-[3px] rounded-sm',
+                                  b === 1 ? 'h-1.5' : b === 2 ? 'h-2' : 'h-2.5',
+                                  b <= PRIORITY[i] ? (PRIORITY[i] === 3 ? 'bg-red-500' : 'bg-neutral-500') : 'bg-neutral-200',
+                                ]}
+                              />
+                            ))}
+                          </span>
+                          <span class="hidden truncate sm:inline">{d.due[i]}</span>
+                          <span
+                            class:list={[
+                              'flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[8px] font-semibold',
+                              PEOPLE[i] === 'AI' ? 'bg-emerald-100 text-emerald-700' : 'bg-violet-100 text-violet-700',
+                            ]}
+                          >
+                            {PEOPLE[i]}
+                          </span>
+                        </div>
+                      </li>
+                    ) : null,
+                  )}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- what the client does: one at a time; under the window on a phone, over its corner on wider screens -->
+  <div class="pointer-events-none relative mx-auto mt-3 w-full max-w-80 sm:absolute sm:-right-6 sm:-bottom-8 sm:mt-0 sm:w-80">
+    {
+      d.events.map((e, i) => (
+        <div
+          data-event={i}
+          class:list={[
+            'animate-toast flex items-center gap-3 rounded-xl bg-white/95 p-3 shadow-xl ring-1 shadow-neutral-900/10 ring-neutral-900/10 backdrop-blur sm:p-3.5',
+            i > 0 && 'hidden',
+          ]}
+        >
+          <span
+            class:list={[
+              'flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold',
+              'paid' in e ? 'bg-emerald-100 text-emerald-700' : 'bg-neutral-100 text-neutral-700',
+            ]}
+          >
+            {'paid' in e ? <Icon name="check" class="h-4 w-4" strokeWidth={2.5} /> : e.who}
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-[11px] text-neutral-500">
+              {e.what} · <span class="text-neutral-800">{e.from}</span>
+            </p>
+            <p class="truncate text-[13px] font-semibold text-neutral-900">{e.text}</p>
+          </div>
+          <span class:list={['shrink-0 text-[11px]', 'paid' in e ? 'font-semibold text-emerald-600' : 'text-neutral-500']}>{e.side}</span>
+        </div>
+      ))
+    }
+  </div>
+</div>
+<p class="mt-4 text-center text-xs text-neutral-400 sm:mt-14" aria-hidden="true">{d.tryIt}</p>
+
+<script>
+  type Column = 'new' | 'in_progress' | 'done'
+  const NEXT: Record<Column, Column> = { new: 'in_progress', in_progress: 'done', done: 'new' }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-demo]')) {
+    const columns = Object.fromEntries(
+      [...root.querySelectorAll<HTMLElement>('[data-column]')].map((ul) => [ul.dataset.column, ul]),
+    ) as Record<Column, HTMLElement>
+    const cards = [...root.querySelectorAll<HTMLElement>('[data-card]')]
+    const start = new Map(cards.map((c) => [c, c.closest<HTMLElement>('[data-column]')!.dataset.column as Column]))
+    const counts = root.querySelectorAll<HTMLElement>('[data-count]')
+    const progressText = root.querySelector<HTMLElement>('[data-progress-text]')
+    const progressBar = root.querySelector<HTMLElement>('[data-progress-bar]')
+    const clock = root.querySelector<HTMLElement>('[data-clock]')
+    const timerTask = root.querySelector<HTMLElement>('[data-timer-task]')
+    const events = [...root.querySelectorAll<HTMLElement>('[data-event]')]
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let hovering = false
+    let onScreen = false
+    const running = () => onScreen && !hovering && !document.hidden && !reduceMotion.matches
+
+    function columnOf(card: HTMLElement): Column {
+      return card.closest<HTMLElement>('[data-column]')!.dataset.column as Column
+    }
+
+    /** Counts, progress and the timer's task after a move. */
+    function refresh() {
+      for (const c of counts) c.textContent = String(columns[c.dataset.count as Column].children.length)
+      const done = columns.done.children.length
+      if (progressText) progressText.textContent = (progressText.dataset.template ?? '').replace('{done}', String(done)).replace('{total}', String(cards.length))
+      if (progressBar) progressBar.style.width = `${Math.round((done / cards.length) * 100)}%`
+      const working = columns.in_progress.querySelector<HTMLElement>('[data-card] .line-clamp-2')
+      if (timerTask && working) timerTask.textContent = working.textContent
+    }
+
+    /** Moves cards to their new columns, sliding each from where it was (FLIP). */
+    function move(changes: [HTMLElement, Column][], highlight?: HTMLElement) {
+      const before = new Map(cards.map((c) => [c, c.getBoundingClientRect()]))
+      for (const [card, to] of changes) columns[to].append(card)
+      refresh()
+      if (reduceMotion.matches) return
+      for (const card of cards) {
+        const a = before.get(card)!
+        const b = card.getBoundingClientRect()
+        const dx = a.left - b.left
+        const dy = a.top - b.top
+        if (!dx && !dy) continue
+        card.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], {
+          duration: 520,
+          easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+        })
+      }
+      highlight?.animate(
+        [{ boxShadow: '0 0 0 2px rgb(16 185 129 / 0.6), 0 8px 24px -8px rgb(0 0 0 / 0.25)' }, { boxShadow: '0 0 0 0 transparent' }],
+        { duration: 1100, easing: 'ease-out' },
+      )
+    }
+
+    function advance(card: HTMLElement) {
+      move([[card, NEXT[columnOf(card)]]], card)
+    }
+
+    /** One step of the project: a new task is picked up while fewer than two are in progress; otherwise one gets done. All done: back to the start. */
+    function step() {
+      if (!running()) return
+      const fresh = columns.new.firstElementChild as HTMLElement | null
+      const working = columns.in_progress.firstElementChild as HTMLElement | null
+      if (fresh && columns.in_progress.children.length < 2) advance(fresh)
+      else if (working) advance(working)
+      else move(cards.map((c) => [c, start.get(c)!]))
+    }
+
+    for (const card of cards) card.addEventListener('click', () => advance(card))
+    root.addEventListener('pointerenter', () => (hovering = true))
+    root.addEventListener('pointerleave', () => (hovering = false))
+    new IntersectionObserver(([entry]) => (onScreen = entry.isIntersecting)).observe(root)
+
+    // the timer ticks whenever it's seen
+    let seconds = 42 * 60 + 17
+    window.setInterval(() => {
+      if (!onScreen || document.hidden || !clock) return
+      seconds++
+      const h = Math.floor(seconds / 3600)
+      const m = Math.floor((seconds % 3600) / 60)
+      const s = seconds % 60
+      clock.textContent = `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    }, 1000)
+
+    let event = 0
+    window.setInterval(() => {
+      if (!running()) return
+      events[event].classList.add('hidden')
+      event = (event + 1) % events.length
+      events[event].classList.remove('hidden')
+    }, 3600)
+
+    window.setInterval(step, 2600)
+  }
+</script>

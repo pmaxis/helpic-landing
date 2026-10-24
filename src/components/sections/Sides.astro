@@ -1,0 +1,73 @@
+---
+/** What the freelancer gets, and what their client does: the two accounts Helpic has. */
+import SectionHeading from '@/components/ui/SectionHeading.astro'
+import Icon from '@/components/ui/Icon.astro'
+import LinkButton from '@/components/ui/LinkButton.astro'
+import { appLink } from '@/config'
+import { MESSAGES, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const t = MESSAGES[locale].sides
+---
+
+<section class="py-24 sm:py-32" aria-labelledby="sides-title">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <SectionHeading id="sides-title" eyebrow={t.eyebrow} title={t.title} />
+
+    <div class="mt-16 grid gap-5 lg:grid-cols-2">
+      <!-- the freelancer: dark in either theme -->
+      <article class="light-palette reveal relative overflow-hidden rounded-3xl bg-neutral-950 p-8 text-white sm:p-10">
+        <div class="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl" aria-hidden="true"></div>
+        <p class="relative flex items-center gap-3">
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10" aria-hidden="true">
+            <Icon name="laptop" class="h-5 w-5" />
+          </span>
+          <span class="text-xl font-semibold">{t.freelancer.title}</span>
+        </p>
+        <ul class="relative mt-8 space-y-4">
+          {
+            t.freelancer.items.map((item) => (
+              <li class="flex gap-3 text-neutral-300">
+                <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-400/15 text-emerald-300" aria-hidden="true">
+                  <Icon name="check" class="h-3 w-3" strokeWidth={3} />
+                </span>
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+        <LinkButton href={appLink('/register')} variant="light" arrow class="relative mt-10">{t.freelancer.cta}</LinkButton>
+      </article>
+
+      <!-- the client -->
+      <article class="reveal relative overflow-hidden rounded-3xl bg-white p-8 ring-1 ring-neutral-200 sm:p-10">
+        <p class="flex items-center gap-3">
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700" aria-hidden="true">
+            <Icon name="users" class="h-5 w-5" />
+          </span>
+          <span class="text-xl font-semibold text-neutral-950">{t.client.title}</span>
+        </p>
+        <ul class="mt-8 space-y-4">
+          {
+            t.client.items.map((item) => (
+              <li class="flex gap-3 text-neutral-600">
+                <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600" aria-hidden="true">
+                  <Icon name="check" class="h-3 w-3" strokeWidth={3} />
+                </span>
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+        <p class="mt-10 flex items-center gap-2 text-sm text-neutral-500">
+          <Icon name="link" class="h-4 w-4" />
+          {t.client.note}
+        </p>
+      </article>
+    </div>
+  </div>
+</section>

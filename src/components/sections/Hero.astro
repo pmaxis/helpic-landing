@@ -1,0 +1,57 @@
+---
+/** What Helpic is in a sentence, the way in, and the app itself moving underneath. */
+import BoardDemo from '@/components/demo/BoardDemo.astro'
+import Icon from '@/components/ui/Icon.astro'
+import LinkButton from '@/components/ui/LinkButton.astro'
+import { appLink } from '@/config'
+import { MESSAGES, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const t = MESSAGES[locale].hero
+---
+
+<section class="relative overflow-hidden" aria-labelledby="hero-title">
+  <div class="bg-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute top-[-12rem] left-1/2 h-[32rem] w-[56rem] -translate-x-1/2 rounded-full bg-emerald-400/15 blur-3xl" aria-hidden="true"></div>
+
+  <div class="relative mx-auto max-w-6xl px-4 pt-16 pb-24 sm:px-6 sm:pt-24 sm:pb-32">
+    <div class="mx-auto max-w-4xl text-center">
+      <p class="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-medium text-neutral-600 ring-1 ring-neutral-200 backdrop-blur sm:text-sm">
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+        {t.badge}
+      </p>
+      <h1 id="hero-title" class="mt-6 text-4xl leading-[1.05] font-bold tracking-tight text-balance text-neutral-950 sm:text-6xl lg:text-7xl">
+        <span class="block sm:whitespace-nowrap">{t.title}</span>
+        <span class="relative inline-block text-emerald-600">
+          {t.titleAccent}
+          <svg viewBox="0 0 300 12" preserveAspectRatio="none" class="absolute -bottom-1 left-0 h-2.5 w-full text-emerald-400/70 sm:-bottom-2" aria-hidden="true">
+            <path d="M2 9c60-6 140-8 296-4" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
+          </svg>
+        </span>
+      </h1>
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-pretty text-neutral-600 sm:text-xl">{t.lead}</p>
+      <div class="mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+        <LinkButton href={appLink('/register')} size="lg" arrow>{t.primary}</LinkButton>
+        <LinkButton href="#how" variant="outline" size="lg">{t.secondary}</LinkButton>
+      </div>
+      <ul class="mt-7 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-neutral-500">
+        {
+          t.points.map((p) => (
+            <li class="flex items-center gap-1.5">
+              <Icon name="check" class="h-4 w-4 text-emerald-600" strokeWidth={2.5} />
+              {p}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="lean relative mx-auto mt-16 max-w-5xl sm:mt-20">
+      <BoardDemo locale={locale} />
+    </div>
+  </div>
+</section>

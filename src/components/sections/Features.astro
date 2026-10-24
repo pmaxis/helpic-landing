@@ -1,0 +1,244 @@
+---
+/**
+ * What Helpic does, as a grid of tiles, each with the bit of the app it is
+ * about. The timer's tile runs: its price follows its time at the rate, by
+ * the whole minute, as the app bills it.
+ */
+import FeatureTile from '@/components/ui/FeatureTile.astro'
+import SectionHeading from '@/components/ui/SectionHeading.astro'
+import Icon from '@/components/ui/Icon.astro'
+import { MESSAGES, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const t = MESSAGES[locale].features
+const demo = MESSAGES[locale].demo
+
+/** The board tile's columns: how many cards each holds, and its dot. */
+const BOARD = [
+  { cards: 2, dot: 'bg-sky-500' },
+  { cards: 3, dot: 'bg-violet-500' },
+  { cards: 1, dot: 'bg-amber-500' },
+  { cards: 2, dot: 'bg-emerald-500' },
+  { cards: 2, dot: 'bg-teal-500' },
+]
+const CURRENCIES = ['USD', 'EUR', 'GBP', 'UAH', 'PLN', 'CAD']
+const ROLES = [t.team.owner, t.team.member, t.team.contractor]
+const ROLE_TONE = ['bg-neutral-900 text-white', 'bg-sky-50 text-sky-700 ring-1 ring-sky-600/20 ring-inset', 'bg-amber-50 text-amber-700 ring-1 ring-amber-600/20 ring-inset']
+const initials = (name: string) => name.split(' ').map((w) => w[0]).join('')
+const RATE_CENTS = 4000
+const START_SECONDS = 1 * 3600 + 24 * 60 + 36
+---
+
+<section id="features" class="border-t border-neutral-200/70 bg-neutral-50/60 py-24 sm:py-32" aria-labelledby="features-title">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <SectionHeading id="features-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
+
+    <ul class="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+      <!-- the board, with a project's own columns -->
+      <FeatureTile icon="board" title={t.board.title} text={t.board.text} class="sm:col-span-2 lg:col-span-4">
+        <div class="grid w-full max-w-xl grid-cols-5 gap-2">
+          {
+            BOARD.map((c, i) => (
+              <div class:list={['space-y-1.5 rounded-lg p-1.5', i === 4 ? 'bg-teal-50 ring-1 ring-teal-600/20' : 'bg-white ring-1 ring-neutral-200']}>
+                <span class="flex items-center gap-1 px-0.5 text-[10px] font-medium text-neutral-600 sm:text-[11px]">
+                  <span class:list={['h-1.5 w-1.5 shrink-0 rounded-full', c.dot]} />
+                  <span class="truncate">{t.board.columns[i]}</span>
+                </span>
+                {Array.from({ length: c.cards }).map((_, k) => (
+                  <span class="block rounded-md bg-white p-1.5 shadow-xs ring-1 ring-neutral-200">
+                    <span class:list={['block h-1.5 rounded-full bg-neutral-200', k % 2 ? 'w-3/4' : 'w-full']} />
+                    <span class="mt-1.5 flex items-center justify-between">
+                      <span class:list={['h-1.5 w-6 rounded-full', i === 4 ? 'bg-teal-200' : 'bg-neutral-100']} />
+                      <span class="h-3 w-3 rounded-full bg-neutral-200" />
+                    </span>
+                  </span>
+                ))}
+              </div>
+            ))
+          }
+        </div>
+      </FeatureTile>
+
+      <!-- the timer, pricing as it runs -->
+      <FeatureTile icon="clock" title={t.timer.title} text={t.timer.text} class="lg:col-span-2">
+        <div data-meter data-seconds={START_SECONDS} data-rate={RATE_CENTS} class="w-full max-w-60 rounded-xl bg-white p-4 shadow-sm ring-1 ring-neutral-200">
+          <p class="flex items-center gap-1.5 text-[11px] font-medium text-neutral-500">
+            <span class="animate-pulse-dot h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+            {demo.tasks[0]}
+          </p>
+          <p data-meter-clock class="mt-1.5 text-3xl font-semibold tracking-tight text-neutral-950 tabular-nums">1:24:36</p>
+          <div class="mt-3 grid grid-cols-2 gap-2 border-t border-neutral-100 pt-3 text-xs">
+            <p>
+              <span class="block text-neutral-500">{t.timer.rate}</span>
+              <span class="font-medium text-neutral-900 tabular-nums">$40{t.timer.perHour}</span>
+            </p>
+            <p>
+              <span class="block text-neutral-500">{t.timer.price}</span>
+              <span data-meter-price class="font-semibold text-emerald-600 tabular-nums">$56.67</span>
+            </p>
+          </div>
+        </div>
+      </FeatureTile>
+
+      <!-- a report -->
+      <FeatureTile icon="file" title={t.report.title} text={t.report.text} class="lg:col-span-2">
+        <div class="w-full max-w-52 rotate-[-2deg] rounded-md bg-white p-4 shadow-lg ring-1 ring-neutral-200 transition-transform duration-500 group-hover:rotate-0">
+          <p class="text-center text-[8px] font-bold tracking-[0.14em] text-neutral-400 uppercase">{t.report.eyebrow}</p>
+          <span class="mx-auto mt-2 block h-1.5 w-2/3 rounded-full bg-neutral-200"></span>
+          <div class="mt-4 space-y-2">
+            {
+              [0, 1, 2, 3].map((i) => (
+                <span class="flex items-center justify-between gap-3">
+                  <span class:list={['h-1.5 rounded-full bg-neutral-200', i % 2 ? 'w-1/2' : 'w-2/3']} />
+                  <span class="h-1.5 w-8 rounded-full bg-neutral-300" />
+                </span>
+              ))
+            }
+          </div>
+          <p class="mt-4 flex items-center justify-between border-t border-neutral-200 pt-2 text-[10px]">
+            <span class="font-semibold text-neutral-500 uppercase">{t.report.total}</span>
+            <span class="font-bold text-neutral-950 tabular-nums">$1,250.00</span>
+          </p>
+        </div>
+      </FeatureTile>
+
+      <!-- currencies, and hryvnias at the NBU's rate -->
+      <FeatureTile icon="currency" title={t.currency.title} text={t.currency.text} class="lg:col-span-2">
+        <div class="w-full max-w-72">
+          <div class="flex flex-wrap justify-center gap-1.5">
+            {
+              CURRENCIES.map((c) => (
+                <span class:list={['rounded-md px-2 py-1 text-[11px] font-semibold tabular-nums', c === 'USD' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-500 ring-1 ring-neutral-200']}>
+                  {c}
+                </span>
+              ))
+            }
+          </div>
+          <div class="mt-4 rounded-xl bg-white p-3.5 text-center shadow-sm ring-1 ring-neutral-200">
+            <p class="text-xl font-bold text-neutral-950 tabular-nums">$1,250.00</p>
+            <p class="mt-0.5 text-sm font-medium text-emerald-600 tabular-nums">≈ ₴51,850.00</p>
+            <p class="mt-2 text-[10px] text-neutral-400">{t.currency.rate} · 41.4800</p>
+          </div>
+        </div>
+      </FeatureTile>
+
+      <!-- Telegram and email -->
+      <FeatureTile icon="bell" title={t.notify.title} text={t.notify.text} class="lg:col-span-2">
+        <div class="w-full max-w-60 space-y-2.5">
+          <div class="flex items-start gap-2.5">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-500 text-white">
+              <Icon name="send" class="h-3.5 w-3.5" />
+            </span>
+            <p class="rounded-2xl rounded-tl-md bg-white px-3 py-2 text-xs shadow-sm ring-1 ring-neutral-200">
+              <span class="block font-semibold text-amber-600">{t.notify.message}</span>
+              <span class="text-neutral-800">{t.notify.task}</span>
+            </p>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-white">
+              <Icon name="mail" class="h-3.5 w-3.5" />
+            </span>
+            <p class="rounded-2xl rounded-tl-md bg-white px-3 py-2 text-xs shadow-sm ring-1 ring-neutral-200">
+              <span class="block font-semibold text-emerald-600">{demo.events[3].what}</span>
+              <span class="text-neutral-800 tabular-nums">{demo.events[3].text} · $1,250.00</span>
+            </p>
+          </div>
+        </div>
+      </FeatureTile>
+
+      <!-- the client's company -->
+      <FeatureTile icon="users" title={t.team.title} text={t.team.text} class="lg:col-span-2">
+        <div class="w-full max-w-64 rounded-xl bg-white p-3 shadow-sm ring-1 ring-neutral-200">
+          <p class="px-1 pb-2 text-[11px] font-semibold text-neutral-500">{t.team.company}</p>
+          <ul class="space-y-1">
+            {
+              t.team.people.map((name, i) => (
+                <li class="flex items-center gap-2 rounded-lg px-1 py-1">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-[10px] font-semibold text-neutral-600">{initials(name)}</span>
+                  <span class="truncate text-xs font-medium text-neutral-800">{name}</span>
+                  <span class:list={['ml-auto shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium', ROLE_TONE[i]]}>{ROLES[i]}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </FeatureTile>
+
+      <!-- a task's history -->
+      <FeatureTile icon="history" title={t.history.title} text={t.history.text} class="lg:col-span-2">
+        <ol class="w-full max-w-60 space-y-3">
+          {
+            t.history.items.map((item, i) => (
+              <li class="flex items-center gap-2.5 text-xs">
+                <span class:list={['flex h-7 w-7 shrink-0 items-center justify-center rounded-full', i === 1 ? 'bg-violet-100 text-violet-700' : 'bg-white text-neutral-500 ring-1 ring-neutral-200']}>
+                  <Icon name={i === 0 ? 'board' : i === 1 ? 'paperclip' : 'message'} class="h-3.5 w-3.5" />
+                </span>
+                <span class="min-w-0 text-neutral-600">
+                  <span class="font-semibold text-neutral-900">{t.team.people[1].split(' ')[0]}</span> {item}
+                </span>
+              </li>
+            ))
+          }
+        </ol>
+      </FeatureTile>
+
+      <!-- two-factor and devices -->
+      <FeatureTile icon="shield" title={t.security.title} text={t.security.text} class="lg:col-span-2">
+        <div class="w-full max-w-60">
+          <div class="flex justify-center gap-1">
+            {
+              '482913'.split('').map((n, i) => (
+                <span class:list={['flex h-9 w-7 items-center justify-center rounded-md bg-white text-base font-semibold text-neutral-900 ring-1 ring-neutral-300', i === 2 && 'mr-2']}>{n}</span>
+              ))
+            }
+          </div>
+          <ul class="mt-4 space-y-1.5">
+            {
+              t.security.devices.map((device, i) => (
+                <li class="flex items-center gap-2 rounded-lg bg-white px-2.5 py-1.5 text-xs ring-1 ring-neutral-200">
+                  <Icon name={i === 0 ? 'laptop' : 'phone'} class="h-3.5 w-3.5 text-neutral-400" />
+                  <span class="truncate text-neutral-700">{device}</span>
+                  {i === 0 && <span class="ml-auto shrink-0 text-[10px] font-medium text-emerald-600">{t.security.now}</span>}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </FeatureTile>
+    </ul>
+  </div>
+</section>
+
+<script>
+  /** "$56.40": the app's money format. */
+  const money = (cents: number) => '$' + (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  for (const meter of document.querySelectorAll<HTMLElement>('[data-meter]')) {
+    const clock = meter.querySelector<HTMLElement>('[data-meter-clock]')!
+    const price = meter.querySelector<HTMLElement>('[data-meter-price]')!
+    const rate = Number(meter.dataset.rate)
+    let seconds = Number(meter.dataset.seconds)
+    let onScreen = false
+    new IntersectionObserver(([entry]) => (onScreen = entry.isIntersecting)).observe(meter)
+
+    const render = () => {
+      const h = Math.floor(seconds / 3600)
+      const m = Math.floor((seconds % 3600) / 60)
+      const s = seconds % 60
+      clock.textContent = `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+      // billed by the whole minute, as the app does
+      price.textContent = money(Math.round((Math.round(seconds / 60) * rate) / 60))
+    }
+    render()
+    window.setInterval(() => {
+      if (!onScreen || document.hidden) return
+      // a little faster than real time, so the price is seen to move
+      seconds += 7
+      render()
+    }, 1000)
+  }
+</script>

@@ -1,0 +1,81 @@
+---
+/** What Helpic is, the page's sections, the way into the app, and the other language. */
+import AppLogo from '@/components/AppLogo.astro'
+import { appLink } from '@/config'
+import { LOCALES, LOCALE_NAMES, MESSAGES, localePath, type Locale } from '@/i18n/ui'
+
+interface Props {
+  locale: Locale
+  path?: string
+}
+
+const { locale, path = '/' } = Astro.props
+const t = MESSAGES[locale]
+const year = new Date().getFullYear()
+
+const COLUMNS = [
+  {
+    title: t.footer.product,
+    links: [
+      { href: '#features', label: t.nav.features },
+      { href: '#how', label: t.nav.how },
+      { href: '#faq', label: t.nav.faq },
+    ],
+  },
+  {
+    title: t.footer.account,
+    links: [
+      { href: appLink('/login'), label: t.nav.signIn },
+      { href: appLink('/register'), label: t.footer.register },
+    ],
+  },
+]
+---
+
+<footer class="border-t border-neutral-200">
+  <div class="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-4 py-14 sm:px-6 md:grid-cols-[minmax(0,2fr)_repeat(3,minmax(0,1fr))]">
+    <div class="col-span-2 md:col-span-1">
+      <AppLogo />
+      <p class="mt-4 max-w-xs text-sm text-neutral-500">{t.footer.tagline}</p>
+    </div>
+    {
+      COLUMNS.map((c) => (
+        <div>
+          <p class="text-sm font-semibold text-neutral-950">{c.title}</p>
+          <ul class="mt-4 space-y-2.5 text-sm">
+            {c.links.map((l) => (
+              <li>
+                <a href={l.href} class="text-neutral-500 transition-colors hover:text-neutral-950">
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+    <div>
+      <p class="text-sm font-semibold text-neutral-950">{t.nav.language}</p>
+      <ul class="mt-4 space-y-2.5 text-sm">
+        {
+          LOCALES.map((l) => (
+            <li>
+              <a
+                href={localePath(l, path)}
+                hreflang={l}
+                lang={l}
+                aria-current={l === locale ? 'page' : undefined}
+                class="text-neutral-500 transition-colors hover:text-neutral-950 aria-[current=page]:font-medium aria-[current=page]:text-neutral-950"
+              >
+                {LOCALE_NAMES[l]}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-neutral-200/70">
+    <p class="mx-auto max-w-6xl px-4 py-6 text-xs text-neutral-400 sm:px-6">© {year} {t.footer.rights}</p>
+  </div>
+</footer>

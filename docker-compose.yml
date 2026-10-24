@@ -1,0 +1,26 @@
+name: helpic-landing
+
+services:
+  landing:
+    build:
+      context: .
+      target: dev
+    restart: unless-stopped
+    # Live-reload: the source is bind-mounted (its .env with it), node_modules stays in the image.
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "127.0.0.1:${LANDING_PORT:-4321}:4321"
+
+  # Production-like build: `docker compose --profile prod up --build landing-prod`
+  landing-prod:
+    profiles: [prod]
+    build:
+      context: .
+      target: production
+      args:
+        PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-http://localhost:8092}
+        PUBLIC_APP_URL: ${PUBLIC_APP_URL:-http://localhost:5180}
+    ports:
+      - "127.0.0.1:${LANDING_PROD_PORT:-8092}:80"
