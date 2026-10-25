@@ -28,11 +28,20 @@ const COLUMNS = [
       { href: appLink('/register'), label: t.footer.register },
     ],
   },
+  {
+    // The policies live in the app, where an admin keeps them.
+    title: t.footer.legal,
+    links: [
+      { href: appLink('/privacy'), label: t.footer.privacy },
+      { href: appLink('/terms'), label: t.footer.terms },
+      { href: appLink('/cookies'), label: t.footer.cookies },
+    ],
+  },
 ]
 ---
 
 <footer class="border-t border-neutral-200">
-  <div class="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-4 py-14 sm:px-6 md:grid-cols-[minmax(0,2fr)_repeat(3,minmax(0,1fr))]">
+  <div class="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-4 py-14 sm:px-6 md:grid-cols-[minmax(0,2fr)_repeat(4,minmax(0,1fr))]">
     <div class="col-span-2 md:col-span-1">
       <AppLogo />
       <p class="mt-4 max-w-xs text-sm text-neutral-500">{t.footer.tagline}</p>

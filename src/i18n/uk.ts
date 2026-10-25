@@ -207,6 +207,10 @@ export const uk: Messages = {
     product: 'Продукт',
     account: 'Акаунт',
     register: 'Створити акаунт',
+    legal: 'Правове',
+    privacy: 'Політика конфіденційності',
+    terms: 'Умови користування',
+    cookies: 'Політика щодо cookie',
     rights: 'Helpic',
   },
   notFound: {

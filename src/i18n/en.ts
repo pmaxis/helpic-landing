@@ -206,6 +206,10 @@ export const en = {
     product: 'Product',
     account: 'Account',
     register: 'Create an account',
+    legal: 'Legal',
+    privacy: 'Privacy Policy',
+    terms: 'Terms of Use',
+    cookies: 'Cookie Policy',
     rights: 'Helpic',
   },
   notFound: {
