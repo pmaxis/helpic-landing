@@ -137,11 +137,13 @@ export const en = {
       title: 'For the client',
       items: [
         'Where the work stands, without asking',
+        'Every freelancer you work with in one place: invite them yourself',
         'Set tasks and leave comments and files right on them',
         'Bring your colleagues and contractors',
         'A clear report: what was done and what it cost',
       ],
-      note: 'Clients join by their freelancer’s invitation.',
+      cta: 'Create a client account',
+      note: 'Or join by your freelancer’s invitation.',
     },
   },
   spotlight: {

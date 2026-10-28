@@ -64,7 +64,8 @@ const t = MESSAGES[locale].sides
             ))
           }
         </ul>
-        <p class="mt-10 flex items-center gap-2 text-sm text-neutral-500">
+        <LinkButton href={appLink('/register?role=client')} arrow class="mt-10">{t.client.cta}</LinkButton>
+        <p class="mt-4 flex items-center gap-2 text-sm text-neutral-500">
           <Icon name="link" class="h-4 w-4" />
           {t.client.note}
         </p>
